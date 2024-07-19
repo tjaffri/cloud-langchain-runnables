@@ -1,5 +1,11 @@
 # Sample LangChain Runnables Hosted on Railway 
 
+Debug locally with `poetry run python3 server.py`
+
+Otherwise, just deploy this repo to Railway.app and replace the URL in routes below.
+
+Note that you must have the `$SECRET`and `$OPENAI_API_KEY` variables set locally as well as on Railway.app.
+
 ## Simple Add One Route
 
 ```bash
