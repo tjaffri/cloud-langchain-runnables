@@ -1,9 +1,9 @@
 import os
 from fastapi import Depends, FastAPI, Header, HTTPException
-from langchain_core.runnables import RunnableLambda
 from typing_extensions import Annotated
 
 from langserve import add_routes
+from runnables.add_one import add_one_runnable
 
 
 async def verify_token(x_token: Annotated[str, Header()]) -> None:
@@ -20,15 +20,7 @@ app = FastAPI(
 )
 
 
-def add_one(x: int) -> int:
-    """Add one to an integer."""
-    return x + 1
-
-
-chain = RunnableLambda(add_one)
-
-
-add_routes(app, chain, path="/add_one")
+add_routes(app, add_one_runnable, path="/add_one")
 
 if __name__ == "__main__":
     import uvicorn
