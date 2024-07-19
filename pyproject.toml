@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "railway-langchain-runnables"
+version = "0.1.0"
+description = ""
+authors = ["Taqi Jaffri <tjaffri@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.111.1"
+langserve = "^0.2.2"
+langchain = "^0.2.9"
+langchain-openai = "^0.1.17"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
