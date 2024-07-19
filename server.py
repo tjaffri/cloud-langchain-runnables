@@ -5,7 +5,7 @@ from typing_extensions import Annotated
 from langserve import add_routes
 from runnables.add_one import add_one_runnable
 from runnables.resume_key_points import resume_key_points_runnable
-
+from runnables.resume_summary import resume_summary_runnable
 
 async def verify_token(x_token: Annotated[str, Header()]) -> None:
     """Verify the token is valid."""
@@ -23,6 +23,7 @@ app = FastAPI(
 
 add_routes(app, add_one_runnable, path="/add_one")
 add_routes(app, resume_key_points_runnable, path="/resume_key_points")
+add_routes(app, resume_summary_runnable, path="/resume_summary")
 
 if __name__ == "__main__":
     import uvicorn
