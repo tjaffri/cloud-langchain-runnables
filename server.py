@@ -4,6 +4,7 @@ from typing_extensions import Annotated
 
 from langserve import add_routes
 from runnables.add_one import add_one_runnable
+from runnables.resume_key_points import resume_key_points_runnable
 
 
 async def verify_token(x_token: Annotated[str, Header()]) -> None:
@@ -21,6 +22,7 @@ app = FastAPI(
 
 
 add_routes(app, add_one_runnable, path="/add_one")
+add_routes(app, resume_key_points_runnable, path="/resume_key_points")
 
 if __name__ == "__main__":
     import uvicorn
@@ -30,4 +32,4 @@ if __name__ == "__main__":
     if port_env:
         port = int(port_env)
 
-    uvicorn.run(app, host="localhost", port=port)
+    uvicorn.run(app, host="0.0.0.0", port=port)
