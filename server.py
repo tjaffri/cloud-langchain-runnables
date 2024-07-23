@@ -16,6 +16,7 @@ async def verify_token(x_token: Annotated[str, Header()]) -> None:
 
 app = FastAPI(
     title="LangChain Server",
+    description="Sample LangChain Server exposing runnables deployed via Railway.app",
     version="1.0",
     dependencies=[Depends(verify_token)],
 )

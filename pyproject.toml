@@ -4,15 +4,16 @@ version = "0.1.0"
 description = ""
 authors = ["Taqi Jaffri <tjaffri@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.111.1"
-langserve = "^0.2.2"
-langchain = "^0.2.9"
-langchain-openai = "^0.1.17"
-sse-starlette = "^2.1.2"
-
+fastapi = "*"
+langserve = "*"
+langchain = "*"
+langchain-openai = "*"
+sse-starlette = "*"
+pydantic = "1.*"
 
 [build-system]
 requires = ["poetry-core"]
