@@ -1,11 +1,19 @@
 import os
-from fastapi import Depends, FastAPI, Header, HTTPException
+import logging
+from fastapi import Depends, FastAPI, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
+from fastapi.exception_handlers import request_validation_exception_handler
+from fastapi.exceptions import RequestValidationError
 from typing_extensions import Annotated
-
 from langserve import add_routes
 from runnables.add_one import add_one_runnable
 from runnables.resume_key_points import resume_key_points_runnable
 from runnables.resume_summary import resume_summary_runnable
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 async def verify_token(x_token: Annotated[str, Header()]) -> None:
     """Verify the token is valid."""
@@ -20,6 +28,31 @@ app = FastAPI(
     version="1.0",
     dependencies=[Depends(verify_token)],
 )
+
+
+@app.middleware("http")
+async def log_request_body(request: Request, call_next):
+    body = await request.body()
+    logger.info(f"Request body: {body.decode('utf-8')}")
+    response = await call_next(request)
+    return response
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    logger.error(f"Validation error: {exc}")
+    logger.error(f"Request body: {await request.body()}")
+    return await request_validation_exception_handler(request, exc)
+
+
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request: Request, exc: HTTPException):
+    logger.error(f"HTTP exception: {exc.detail}")
+    logger.error(f"Request body: {await request.body()}")
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
 
 
 add_routes(app, add_one_runnable, path="/add_one")
