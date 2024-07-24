@@ -12,6 +12,7 @@ langserve = "*"
 langchain = "*"
 langchain-openai = "*"
 sse-starlette = "*"
+pydantic = "1.*"
 
 [build-system]
 requires = ["poetry-core"]

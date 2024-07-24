@@ -30,31 +30,6 @@ app = FastAPI(
 )
 
 
-@app.middleware("http")
-async def log_request_body(request: Request, call_next):
-    body = await request.body()
-    logger.info(f"Request body: {body.decode('utf-8')}")
-    response = await call_next(request)
-    return response
-
-
-@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    logger.error(f"Validation error: {exc}")
-    logger.error(f"Request body: {await request.body()}")
-    return await request_validation_exception_handler(request, exc)
-
-
-@app.exception_handler(HTTPException)
-async def http_exception_handler(request: Request, exc: HTTPException):
-    logger.error(f"HTTP exception: {exc.detail}")
-    logger.error(f"Request body: {await request.body()}")
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail},
-    )
-
-
 add_routes(app, add_one_runnable, path="/add_one")
 add_routes(app, resume_key_points_runnable, path="/resume_key_points")
 add_routes(app, resume_summary_runnable, path="/resume_summary")
