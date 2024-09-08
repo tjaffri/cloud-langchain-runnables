@@ -1,5 +1,6 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
 from langchain_openai import ChatOpenAI
+from langgraph.graph import Graph
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -20,3 +21,17 @@ llm = ChatOpenAI(
 )
 
 resume_key_points_runnable = prompt | llm
+
+def resume_key_points(x: str) -> str:
+    return resume_key_points_runnable.invoke(
+        {
+            "resume_text": x,
+        }
+    )
+
+
+# Wrap in a simple graph
+workflow = Graph()
+workflow.add_node("resume_key_points", resume_key_points)
+workflow.set_entry_point("resume_key_points")
+resume_key_points_graph = workflow.compile()

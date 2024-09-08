@@ -6,9 +6,9 @@ from fastapi.exception_handlers import request_validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 from typing_extensions import Annotated
 from langserve import add_routes
-from runnables.add_one import add_one_runnable
-from runnables.resume_key_points import resume_key_points_runnable
-from runnables.resume_summary import resume_summary_runnable
+from cloud_langchain_runnables.add_one import add_one_runnable
+from cloud_langchain_runnables.resume_key_points import resume_key_points_runnable
+from cloud_langchain_runnables.resume_summary import resume_summary_runnable
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)

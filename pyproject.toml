@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "railway-langchain-runnables"
+name = "cloud-langchain-runnables"
 version = "0.1.0"
 description = ""
 authors = ["Taqi Jaffri <tjaffri@gmail.com>"]
@@ -9,10 +9,14 @@ readme = "README.md"
 python = "^3.9"
 fastapi = "*"
 langserve = "*"
+langgraph = "*"
 langchain = "*"
 langchain-openai = "*"
 sse-starlette = "*"
 pydantic = "1.*"
+
+[tool.poetry.group.dev.dependencies]
+langgraph-cli = "^0.1.52"
 
 [build-system]
 requires = ["poetry-core"]
