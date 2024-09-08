@@ -22,12 +22,8 @@ llm = ChatOpenAI(
 
 resume_key_points_runnable = prompt | llm
 
-def resume_key_points(x: str) -> str:
-    return resume_key_points_runnable.invoke(
-        {
-            "resume_text": x,
-        }
-    )
+def resume_key_points(x: dict) -> str:
+    return resume_key_points_runnable.invoke(x)
 
 
 # Wrap in a simple graph

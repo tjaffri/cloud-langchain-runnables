@@ -1,5 +1,15 @@
 # Deployment on Railway.app
 
+## Developing locally
+
+You must have the `$SECRET`and `$OPENAI_API_KEY` variables set locally as well as on Railway.app.
+
+To deploy on https://railway.app/, follow these steps:
+
+Debug locally with `poetry run python3 server.py`
+
+Otherwise, just deploy this repo to Railway.app and replace the URL in routes above. The instructions to deploy to Railway.app are here: https://docs.railway.app/quick-start
+
 ## Routes
 
 The LangChain runnables are exposed as the following routes on the API.
@@ -52,14 +62,3 @@ curl --location --request POST 'http://0.0.0.0:8000/resume_summary/invoke' \
 ```json
 {"output":{"content":"John Doe is a freelance developer with experience in the tech industry. His resume highlights his role as an independent professional, showcasing his ability to manage and execute development projects on his own.","additional_kwargs":{},"response_metadata":{"token_usage":{"completion_tokens":36,"prompt_tokens":51,"total_tokens":87},"model_name":"gpt-4o-2024-05-13","system_fingerprint":"fp_c4e5b6fa31","finish_reason":"stop","logprobs":null},"type":"ai","name":null,"id":"run-da8bc26d-98b8-4259-a5f8-1d1c2f86cb27-0","example":false,"tool_calls":[],"invalid_tool_calls":[],"usage_metadata":{"input_tokens":51,"output_tokens":36,"total_tokens":87}},"metadata":{"run_id":"8aa7c82b-4bdc-448c-85ec-223b3fb46e6d","feedback_tokens":[]}}
 ```
-
-## Developing locally
-
-You must have the `$SECRET`and `$OPENAI_API_KEY` variables set locally as well as on Railway.app.
-
-To deploy on https://railway.app/, follow these steps:
-
-Debug locally with `poetry run python3 server.py`
-
-Otherwise, just deploy this repo to Railway.app and replace the URL in routes above. The instructions to deploy to Railway.app are here: https://docs.railway.app/quick-start
-
