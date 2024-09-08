@@ -2,7 +2,7 @@
 
 ## Developing locally
 
-To debug locally, you need a `.env` file with the `$SECRET`, `$OPENAI_API_KEY` and `LANGSMITH_API_KEY` variables. You can then run `langgraph up` as noted in the instructions here: https://langchain-ai.github.io/langgraph/cloud/quick_start/#using-the-langgraph-cli
+To debug locally, you need a `.env` file with the `$OPENAI_API_KEY` and `LANGSMITH_API_KEY` variables. You can then run `langgraph up` as noted in the instructions here: https://langchain-ai.github.io/langgraph/cloud/quick_start/#using-the-langgraph-cli
 
 ## Routes
 
@@ -14,6 +14,7 @@ The LangChain runnables are exposed as the following agents on the API.
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
+    --header "x-api-key: $LANGSMITH_API_KEY" \
     --data '{
     "assistant_id": "add_one",
     "input": {
@@ -35,6 +36,7 @@ curl --request POST \
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
+    --header "x-api-key: $LANGSMITH_API_KEY" \
     --data '{
     "assistant_id": "resume_key_points",
     "input": {
@@ -56,6 +58,7 @@ curl --request POST \
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
+    --header "x-api-key: $LANGSMITH_API_KEY" \
     --data '{
     "assistant_id": "resume_summary",
     "input": {
