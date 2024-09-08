@@ -6,10 +6,10 @@ prompt = ChatPromptTemplate.from_messages(
     [
         HumanMessagePromptTemplate.from_template(
             """Your task is to review candidate resumes and extract key data points.
-You are to find the First Name, Surname, Email Address, Current Company Name and Current Position in that order. 
-The response should be in CSV format without headers.
+You are to find the First Name, Surname, Email Address, Current Company Name, and Current Position in that order.
+The response should be in CSV format without headers and without any surrounding ticks or quotes.
 Please note that First Name and Surname are to be distinct columns.
-Here is the resume to extract from: 
+Here is the resume to extract from:
 
 {resume_text}"""
         )
