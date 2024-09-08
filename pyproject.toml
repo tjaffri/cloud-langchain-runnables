@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cloud-langchain-runnables"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Taqi Jaffri <tjaffri@gmail.com>"]
 readme = "README.md"
