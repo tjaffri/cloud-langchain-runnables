@@ -1,6 +1,7 @@
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain_openai import ChatOpenAI
-from langgraph.graph import Graph
+from langgraph.graph import StateGraph
+
+from cloud_langchain_runnables.common import LLM, SimpleGraphState
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -16,18 +17,21 @@ Here is the resume to extract from:
     ]
 )
 
-llm = ChatOpenAI(
-    model="gpt-4o", temperature=0, max_tokens=1024, timeout=60 * 2, max_retries=2
-)
 
-resume_key_points_runnable = prompt | llm
-
-def resume_key_points(x: dict) -> str:
-    return resume_key_points_runnable.invoke(x)
+# Create runnable
+resume_key_points_runnable = prompt | LLM
 
 
-# Wrap in a simple graph
-workflow = Graph()
-workflow.add_node("resume_key_points", resume_key_points)
+# Create graph
+def resume_key_points_node(state: SimpleGraphState) -> SimpleGraphState:
+    input = str(state.get("input"))
+    return {
+        "output": resume_key_points_runnable.invoke(input).content,
+    }
+
+
+workflow = StateGraph(SimpleGraphState)
+workflow.add_node("resume_key_points", resume_key_points_node)
 workflow.set_entry_point("resume_key_points")
+workflow.set_finish_point("resume_key_points")
 resume_key_points_graph = workflow.compile()

@@ -37,7 +37,7 @@ curl --location --request POST 'http://0.0.0.0:8000/resume_key_points/invoke' \
     --header "x-token: $SECRET" \
     --data-raw '{
         "input": {
-            "resume_text": "This is my resume.\nMy name is John Doe and I work at a freelance developer."
+            "resume_text": "This is my resume.\nMy name is John Doe and I work as a freelance developer."
         }
     }'
 ```
@@ -54,7 +54,7 @@ curl --location --request POST 'http://0.0.0.0:8000/resume_summary/invoke' \
     --header "x-token: $SECRET" \
     --data-raw '{
         "input": {
-            "resume_text": "This is my resume.\nMy name is John Doe and I work at a freelance developer."
+            "resume_text": "This is my resume.\nMy name is John Doe and I work as a freelance developer."
         }
     }'
 ```
