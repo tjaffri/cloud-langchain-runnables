@@ -5,6 +5,7 @@ from langchain_community.utilities.google_serper import GoogleSerperAPIWrapper
 from langchain.agents import AgentExecutor, create_openai_tools_agent
 from langchain.tools import Tool
 from langgraph.graph import StateGraph
+from langchain.output_parsers import PydanticOutputParser
 import requests
 
 from cloud_langchain_runnables.common import LLM, SimpleGraphState
@@ -31,6 +32,9 @@ def get_stock_price(symbol: str) -> float:
     latest_time = next(iter(data["Time Series (5min)"]))
     return float(data["Time Series (5min)"][latest_time]["4. close"])
 
+# Create output parser
+parser = PydanticOutputParser(pydantic_object=CompanyInfo)
+
 # Create the agent prompt
 prompt = ChatPromptTemplate.from_messages([
     HumanMessagePromptTemplate.from_template(
@@ -47,15 +51,8 @@ Research Steps:
 Company to research: {company_name}
 
 Important: Make multiple searches if needed to find all required information. Be thorough and accurate.
-Format the output exactly as a JSON object matching this schema:
-{{
-    "officers": [
-        {{ "name": "Name", "title": "Title" }}
-    ],
-    "current_stock_price": 123.45,
-    "year_founded": YYYY,
-    "headquartered_at": "City, State, Country"
-}}
+
+{format_instructions}
 
 {agent_scratchpad}"""
     )
@@ -76,7 +73,11 @@ tools = [
 ]
 
 # Create the agent
-agent = create_openai_tools_agent(LLM, tools, prompt)
+agent = create_openai_tools_agent(
+    llm=LLM,
+    tools=tools, 
+    prompt=prompt.partial(format_instructions=parser.get_format_instructions())
+)
 agent_executor = AgentExecutor(agent=agent, tools=tools)
 
 # Create runnable
@@ -86,8 +87,10 @@ company_research_runnable = agent_executor
 def company_research_node(state: SimpleGraphState) -> SimpleGraphState:
     company_name = str(state.get("input"))
     result = company_research_runnable.invoke({"company_name": company_name})
+    # Parse the output into our Pydantic model
+    company_info = parser.parse(result["output"])
     return {
-        "output": result["output"]
+        "output": company_info.dict()
     }
 
 workflow = StateGraph(SimpleGraphState)
