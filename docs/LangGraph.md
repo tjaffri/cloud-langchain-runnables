@@ -11,7 +11,7 @@ LANGSMITH_API_KEY=your_langsmith_api_key_here
 
 # Required for Company Research Agent
 SERPER_API_KEY=your_serper_api_key_here
-ALPHAVANTAGE_API_KEY=your_alphavantage_api_key_here
+FINNHUB_API_KEY=your_finnhub_api_key_here
 ```
 
 You can then run `langgraph up` as noted in the instructions here: https://langchain-ai.github.io/langgraph/cloud/quick_start/#using-the-langgraph-cli
@@ -130,4 +130,4 @@ The Company Research Agent takes a company name as input and returns:
 - Year the company was founded
 - Company headquarters location
 
-It uses Google Serper for web search and AlphaVantage for real-time stock prices.
+It uses Google Serper for web search and Finnhub for real-time stock prices.

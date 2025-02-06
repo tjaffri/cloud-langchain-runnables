@@ -7,6 +7,7 @@ from langchain.tools import Tool
 from langgraph.graph import StateGraph
 from langchain.output_parsers import PydanticOutputParser
 import requests
+import os
 
 from cloud_langchain_runnables.common import LLM, SimpleGraphState
 
@@ -25,12 +26,19 @@ class CompanyInfo(BaseModel):
 search = GoogleSerperAPIWrapper()
 
 def get_stock_price(symbol: str) -> float:
-    """Get the current stock price for a given symbol."""
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey=C1F4FXPLSY0IHWUK"
+    """Get the current stock price for a given symbol using Finnhub."""
+    finnhub_token = os.getenv("FINNHUB_API_KEY")
+    if not finnhub_token:
+        raise ValueError("FINNHUB_API_KEY environment variable is not set")
+        
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={finnhub_token}"
     response = requests.get(url)
     data = response.json()
-    latest_time = next(iter(data["Time Series (5min)"]))
-    return float(data["Time Series (5min)"][latest_time]["4. close"])
+    
+    if "c" not in data:
+        raise ValueError(f"Could not get stock price for {symbol}. Response: {data}")
+        
+    return float(data["c"])  # 'c' is current price in Finnhub API
 
 # Create output parser
 parser = PydanticOutputParser(pydantic_object=CompanyInfo)
