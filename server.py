@@ -9,6 +9,7 @@ from langserve import add_routes
 from cloud_langchain_runnables.add_one import add_one_runnable
 from cloud_langchain_runnables.resume_key_points import resume_key_points_runnable
 from cloud_langchain_runnables.resume_summary import resume_summary_runnable
+from cloud_langchain_runnables.company_research import company_research_runnable
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -33,6 +34,7 @@ app = FastAPI(
 add_routes(app, add_one_runnable, path="/add_one")
 add_routes(app, resume_key_points_runnable, path="/resume_key_points")
 add_routes(app, resume_summary_runnable, path="/resume_summary")
+add_routes(app, company_research_runnable, path="/company_research")
 
 if __name__ == "__main__":
     import uvicorn

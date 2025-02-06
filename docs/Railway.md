@@ -2,7 +2,17 @@
 
 ## Developing locally
 
-You must have the `$SECRET`and `$OPENAI_API_KEY` variables set locally as well as on Railway.app.
+You must have the following environment variables set locally as well as on Railway.app:
+
+```bash
+# Required for API authentication and LangChain
+SECRET=your_secret_here
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Required for Company Research Agent
+SERPER_API_KEY=your_serper_api_key_here
+ALPHAVANTAGE_API_KEY=your_alphavantage_api_key_here
+```
 
 To deploy on https://railway.app/, follow these steps:
 
@@ -62,3 +72,50 @@ curl --location --request POST 'http://0.0.0.0:8000/resume_summary/invoke' \
 ```json
 {"output":{"content":"John Doe is a freelance developer with experience in the tech industry. His resume highlights his role as an independent professional, showcasing his ability to manage and execute development projects on his own.","additional_kwargs":{},"response_metadata":{"token_usage":{"completion_tokens":36,"prompt_tokens":51,"total_tokens":87},"model_name":"gpt-4o-2024-05-13","system_fingerprint":"fp_c4e5b6fa31","finish_reason":"stop","logprobs":null},"type":"ai","name":null,"id":"run-da8bc26d-98b8-4259-a5f8-1d1c2f86cb27-0","example":false,"tool_calls":[],"invalid_tool_calls":[],"usage_metadata":{"input_tokens":51,"output_tokens":36,"total_tokens":87}},"metadata":{"run_id":"8aa7c82b-4bdc-448c-85ec-223b3fb46e6d","feedback_tokens":[]}}
 ```
+
+### Company Research Route
+
+This agent performs comprehensive research about a company using web search and financial APIs.
+
+```bash
+curl --location --request POST 'http://0.0.0.0:8000/company_research/invoke' \
+    --header 'Content-Type: application/json' \
+    --header "x-token: $SECRET" \
+    --data-raw '{
+        "input": {
+            "company_name": "Apple Inc"
+        }
+    }'
+```
+
+```json
+{
+    "output": {
+        "officers": [
+            { "name": "Tim Cook", "title": "CEO" },
+            { "name": "Katherine Adams", "title": "Senior Vice President and General Counsel" },
+            { "name": "Eddy Cue", "title": "Senior Vice President, Services" },
+            { "name": "Craig Federighi", "title": "Senior Vice President" },
+            { "name": "John Giannandrea", "title": "Senior Vice President" },
+            { "name": "Greg "Joz" Joswiak", "title": "Senior Vice President" },
+            { "name": "Sabih Khan", "title": "Senior Vice President" },
+            { "name": "Deirdre O'Brien", "title": "Senior Vice President" }
+        ],
+        "current_stock_price": 232.105,
+        "year_founded": 1976,
+        "headquartered_at": "Cupertino, California, United States"
+    },
+    "metadata": {
+        "run_id": "8aa7c82b-4bdc-448c-85ec-223b3fb46e6d",
+        "feedback_tokens": []
+    }
+}
+```
+
+The Company Research Agent takes a company name as input and returns:
+- List of key company officers and their titles
+- Current stock price (if publicly traded)
+- Year the company was founded
+- Company headquarters location
+
+It uses Google Serper for web search and AlphaVantage for real-time stock prices.
