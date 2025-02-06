@@ -12,8 +12,12 @@ langserve = "*"
 langgraph = "*"
 langchain = "*"
 langchain-openai = "*"
+langchain-google-genai = "*"
+langchain-community = "*"
 sse-starlette = "*"
 pydantic = "1.*"
+requests = "*"
+python-dotenv = "*"
 
 [tool.poetry.group.dev.dependencies]
 langgraph-cli = "^0.1.52"

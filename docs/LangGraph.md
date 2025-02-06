@@ -2,7 +2,19 @@
 
 ## Developing locally
 
-To debug locally, you need a `.env` file with the `$OPENAI_API_KEY` and `LANGSMITH_API_KEY` variables. You can then run `langgraph up` as noted in the instructions here: https://langchain-ai.github.io/langgraph/cloud/quick_start/#using-the-langgraph-cli
+To debug locally, you need a `.env` file with the following environment variables:
+
+```bash
+# Required for LangChain and LangGraph
+OPENAI_API_KEY=your_openai_api_key_here
+LANGSMITH_API_KEY=your_langsmith_api_key_here
+
+# Required for Company Research Agent
+SERPER_API_KEY=your_serper_api_key_here
+ALPHAVANTAGE_API_KEY=your_alphavantage_api_key_here
+```
+
+You can then run `langgraph up` as noted in the instructions here: https://langchain-ai.github.io/langgraph/cloud/quick_start/#using-the-langgraph-cli
 
 ## Routes
 
@@ -73,3 +85,49 @@ curl --request POST \
     "output": "John Doe is a freelance developer with experience in the tech industry. His resume highlights his role as an independent professional, showcasing his ability to manage and execute development projects on his own."
 }
 ```
+
+### Company Research Agent
+
+This agent performs comprehensive research about a company using web search and financial APIs.
+
+```bash
+curl --request POST \
+    --url http://localhost:8123/runs/wait \
+    --header 'Content-Type: application/json' \
+    --header "x-api-key: $LANGSMITH_API_KEY" \
+    --data '{
+    "assistant_id": "company_research",
+    "input": {
+        "input": "Apple Inc"
+    }
+}'
+```
+
+```json
+{
+    "input": "Apple Inc",
+    "output": {
+        "officers": [
+            { "name": "Tim Cook", "title": "CEO" },
+            { "name": "Katherine Adams", "title": "Senior Vice President and General Counsel" },
+            { "name": "Eddy Cue", "title": "Senior Vice President, Services" },
+            { "name": "Craig Federighi", "title": "Senior Vice President" },
+            { "name": "John Giannandrea", "title": "Senior Vice President" },
+            { "name": "Greg "Joz" Joswiak", "title": "Senior Vice President" },
+            { "name": "Sabih Khan", "title": "Senior Vice President" },
+            { "name": "Deirdre O'Brien", "title": "Senior Vice President" }
+        ],
+        "current_stock_price": 232.105,
+        "year_founded": 1976,
+        "headquartered_at": "Cupertino, California, United States"
+    }
+}
+```
+
+The Company Research Agent takes a company name as input and returns:
+- List of key company officers and their titles
+- Current stock price (if publicly traded)
+- Year the company was founded
+- Company headquarters location
+
+It uses Google Serper for web search and AlphaVantage for real-time stock prices.
