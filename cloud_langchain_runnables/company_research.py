@@ -14,14 +14,14 @@ from cloud_langchain_runnables.common import LLM, SimpleGraphState
 
 # Define the output schema
 class CompanyOfficer(BaseModel):
-    name: str = Field(description="Name of the company officer")
-    title: str = Field(description="Title/position of the officer")
+    name: Optional[str] = Field(description="Name of the company officer", default=None)
+    title: Optional[str] = Field(description="Title/position of the officer", default=None)
 
 class CompanyInfo(BaseModel):
-    officers: List[CompanyOfficer] = Field(description="List of key company officers")
+    officers: Optional[List[CompanyOfficer]] = Field(description="List of key company officers", default=None)
     current_stock_price: Optional[float] = Field(description="Current stock price of the company if publicly traded", default=None)
-    year_founded: int = Field(description="Year the company was founded")
-    headquartered_at: str = Field(description="Company headquarters location")
+    year_founded: Optional[int] = Field(description="Year the company was founded", default=None)
+    headquartered_at: Optional[str] = Field(description="Company headquarters location", default=None)
 
 # Initialize tools
 search = GoogleSerperAPIWrapper()
