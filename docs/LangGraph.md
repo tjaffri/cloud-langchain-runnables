@@ -7,7 +7,7 @@ To debug locally, you need a `.env` file with the following environment variable
 ```bash
 # Required for LangChain and LangGraph
 OPENAI_API_KEY=your_openai_api_key_here
-LANGSMITH_API_KEY=your_langsmith_api_key_here
+LANGCHAIN_API_KEY=your_LANGCHAIN_API_KEY_here
 
 # Required for Company Research Agent
 SERPER_API_KEY=your_serper_api_key_here
@@ -26,7 +26,7 @@ The LangChain runnables are exposed as the following agents on the API.
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
-    --header "x-api-key: $LANGSMITH_API_KEY" \
+    --header "x-api-key: $LANGCHAIN_API_KEY" \
     --data '{
     "assistant_id": "add_one",
     "input": {
@@ -48,7 +48,7 @@ curl --request POST \
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
-    --header "x-api-key: $LANGSMITH_API_KEY" \
+    --header "x-api-key: $LANGCHAIN_API_KEY" \
     --data '{
     "assistant_id": "resume_key_points",
     "input": {
@@ -70,7 +70,7 @@ curl --request POST \
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
-    --header "x-api-key: $LANGSMITH_API_KEY" \
+    --header "x-api-key: $LANGCHAIN_API_KEY" \
     --data '{
     "assistant_id": "resume_summary",
     "input": {
@@ -94,7 +94,7 @@ This agent performs comprehensive research about a company using web search and 
 curl --request POST \
     --url http://localhost:8123/runs/wait \
     --header 'Content-Type: application/json' \
-    --header "x-api-key: $LANGSMITH_API_KEY" \
+    --header "x-api-key: $LANGCHAIN_API_KEY" \
     --data '{
     "assistant_id": "company_research",
     "input": {

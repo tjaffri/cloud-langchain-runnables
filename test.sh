@@ -80,7 +80,7 @@ call_api() {
     curl --request POST \
         --url http://localhost:8123/runs/wait \
         --header 'Content-Type: application/json' \
-        --header "x-api-key: $LANGSMITH_API_KEY" \
+        --header "x-api-key: $LANGCHAIN_API_KEY" \
         --data "{
             \"assistant_id\": \"company_research\",
             \"input\": {
@@ -90,9 +90,9 @@ call_api() {
     echo -e "\n\n----------------------------------------\n"
 }
 
-# Check if LANGSMITH_API_KEY is set
-if [ -z "$LANGSMITH_API_KEY" ]; then
-    echo "Error: LANGSMITH_API_KEY environment variable is not set"
+# Check if LANGCHAIN_API_KEY is set
+if [ -z "$LANGCHAIN_API_KEY" ]; then
+    echo "Error: LANGCHAIN_API_KEY environment variable is not set"
     exit 1
 fi
 
