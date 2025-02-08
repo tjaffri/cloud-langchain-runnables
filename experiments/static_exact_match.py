@@ -3,7 +3,7 @@ from cloud_langchain_runnables.company_research import company_research_graph
 
 # 1. Create and/or select your dataset
 client = Client()
-dataset_name = "Company Research Data"
+dataset_name = "Company Research"
 
 # 2. Define an evaluator
 def exact_match(outputs: dict, reference_outputs: dict) -> bool:
@@ -18,5 +18,5 @@ evaluate(
     company_research_graph.invoke,
     data=dataset_name,
     evaluators=[exact_match],
-    experiment_prefix="Company Research Data Exact Match Experiment"
+    experiment_prefix="Company Research - Exact Match"
 )

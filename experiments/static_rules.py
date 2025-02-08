@@ -84,5 +84,5 @@ evaluate(
     company_research_graph.invoke,
     data=dataset_name,
     evaluators=[company_info_evaluator],
-    experiment_prefix="Company Research Data Fancier Exact Match Experiment"
+    experiment_prefix="Company Research - Static Rules"
 )

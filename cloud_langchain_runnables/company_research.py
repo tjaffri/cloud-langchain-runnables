@@ -8,6 +8,7 @@ from langgraph.graph import StateGraph
 from langchain.output_parsers import PydanticOutputParser
 import requests
 import os
+import json
 
 from cloud_langchain_runnables.common import LLM, SimpleGraphState
 
@@ -95,11 +96,27 @@ company_research_runnable = agent_executor
 def company_research_node(state: SimpleGraphState) -> SimpleGraphState:
     company_name = str(state.get("input"))
     result = company_research_runnable.invoke({"company_name": company_name})
+    
     # Parse the output into our Pydantic model
-    company_info = parser.parse(result["output"])
-    return {
-        "output": company_info.dict()
-    }
+    try:
+        company_info = parser.parse(result["output"])
+        
+        # Additional validation for non-existent companies
+        if not company_info.officers:  # If no officers found, likely not a real company
+            raise ValueError(f"Could not find valid information for company: {company_name}")
+            
+        # Basic validation of the data
+        if company_info.year_founded < 1800 or company_info.year_founded > 2024:
+            raise ValueError(f"Invalid founding year for company: {company_name}")
+            
+        if not company_info.headquartered_at or company_info.headquartered_at.strip() == "":
+            raise ValueError(f"No headquarters location found for company: {company_name}")
+            
+        return {
+            "output": json.dumps(company_info.model_dump())
+        }
+    except Exception as e:
+        raise Exception(f"Failed to process company {company_name}: {str(e)}")
 
 workflow = StateGraph(SimpleGraphState)
 workflow.add_node("company_research", company_research_node)

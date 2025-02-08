@@ -49,5 +49,5 @@ evaluate(
     company_research_graph.invoke,
     data=dataset_name,
     evaluators=[llm_judge_evaluator],
-    experiment_prefix="Company Research Data LLM Judge Experiment"
+    experiment_prefix="Company Research - LLM Judge"
 )
