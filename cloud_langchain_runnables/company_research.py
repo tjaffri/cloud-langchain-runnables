@@ -7,30 +7,39 @@ from langchain.tools import Tool
 from langgraph.graph import StateGraph
 from langchain.output_parsers import PydanticOutputParser
 import requests
+import os
+import json
 
 from cloud_langchain_runnables.common import LLM, SimpleGraphState
 
 # Define the output schema
 class CompanyOfficer(BaseModel):
-    name: str = Field(description="Name of the company officer")
-    title: str = Field(description="Title/position of the officer")
+    name: Optional[str] = Field(description="Name of the company officer", default=None)
+    title: Optional[str] = Field(description="Title/position of the officer", default=None)
 
 class CompanyInfo(BaseModel):
-    officers: List[CompanyOfficer] = Field(description="List of key company officers")
-    current_stock_price: float = Field(description="Current stock price of the company")
-    year_founded: int = Field(description="Year the company was founded")
-    headquartered_at: str = Field(description="Company headquarters location")
+    officers: Optional[List[CompanyOfficer]] = Field(description="List of key company officers", default=None)
+    current_stock_price: Optional[float] = Field(description="Current stock price of the company if publicly traded", default=None)
+    year_founded: Optional[int] = Field(description="Year the company was founded", default=None)
+    headquartered_at: Optional[str] = Field(description="Company headquarters location", default=None)
 
 # Initialize tools
 search = GoogleSerperAPIWrapper()
 
 def get_stock_price(symbol: str) -> float:
-    """Get the current stock price for a given symbol."""
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval=5min&apikey=C1F4FXPLSY0IHWUK"
+    """Get the current stock price for a given symbol using Finnhub."""
+    finnhub_token = os.getenv("FINNHUB_API_KEY")
+    if not finnhub_token:
+        raise ValueError("FINNHUB_API_KEY environment variable is not set")
+        
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={finnhub_token}"
     response = requests.get(url)
     data = response.json()
-    latest_time = next(iter(data["Time Series (5min)"]))
-    return float(data["Time Series (5min)"][latest_time]["4. close"])
+    
+    if "c" not in data:
+        raise ValueError(f"Could not get stock price for {symbol}. Response: {data}")
+        
+    return float(data["c"])  # 'c' is current price in Finnhub API
 
 # Create output parser
 parser = PydanticOutputParser(pydantic_object=CompanyInfo)
@@ -87,11 +96,27 @@ company_research_runnable = agent_executor
 def company_research_node(state: SimpleGraphState) -> SimpleGraphState:
     company_name = str(state.get("input"))
     result = company_research_runnable.invoke({"company_name": company_name})
+    
     # Parse the output into our Pydantic model
-    company_info = parser.parse(result["output"])
-    return {
-        "output": company_info.dict()
-    }
+    try:
+        company_info = parser.parse(result["output"])
+        
+        # Additional validation for non-existent companies
+        if not company_info.officers:  # If no officers found, likely not a real company
+            raise ValueError(f"Could not find valid information for company: {company_name}")
+            
+        # Basic validation of the data
+        if company_info.year_founded < 1800 or company_info.year_founded > 2024:
+            raise ValueError(f"Invalid founding year for company: {company_name}")
+            
+        if not company_info.headquartered_at or company_info.headquartered_at.strip() == "":
+            raise ValueError(f"No headquarters location found for company: {company_name}")
+            
+        return {
+            "output": json.dumps(company_info.model_dump())
+        }
+    except Exception as e:
+        raise Exception(f"Failed to process company {company_name}: {str(e)}")
 
 workflow = StateGraph(SimpleGraphState)
 workflow.add_node("company_research", company_research_node)
