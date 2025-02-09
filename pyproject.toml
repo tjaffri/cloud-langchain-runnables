@@ -19,6 +19,7 @@ pydantic = "*"
 requests = "*"
 python-dotenv = "*"
 rapidfuzz = "*"
+uvicorn = "^0.34.0"
 
 [tool.poetry.group.dev.dependencies]
 langgraph-cli = "^0.1.52"
