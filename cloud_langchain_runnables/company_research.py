@@ -87,7 +87,12 @@ agent = create_openai_tools_agent(
     tools=tools, 
     prompt=prompt.partial(format_instructions=parser.get_format_instructions())
 )
-agent_executor = AgentExecutor(agent=agent, tools=tools)
+agent_executor = AgentExecutor(
+    agent=agent, 
+    tools=tools,
+    handle_parsing_errors=True,
+    max_iterations=5,
+)
 
 # Create runnable
 company_research_runnable = agent_executor
@@ -104,14 +109,7 @@ def company_research_node(state: SimpleGraphState) -> SimpleGraphState:
         # Additional validation for non-existent companies
         if not company_info.officers:  # If no officers found, likely not a real company
             raise ValueError(f"Could not find valid information for company: {company_name}")
-            
-        # Basic validation of the data
-        if company_info.year_founded < 1800 or company_info.year_founded > 2024:
-            raise ValueError(f"Invalid founding year for company: {company_name}")
-            
-        if not company_info.headquartered_at or company_info.headquartered_at.strip() == "":
-            raise ValueError(f"No headquarters location found for company: {company_name}")
-            
+
         return {
             "output": json.dumps(company_info.model_dump())
         }

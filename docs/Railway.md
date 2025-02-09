@@ -31,12 +31,12 @@ curl --location --request POST 'http://0.0.0.0:8000/add_one/invoke' \
     --header 'Content-Type: application/json' \
     --header "x-token: $SECRET" \
     --data-raw '{
-        "input": 1
+        "input": 42
     }'
 ````
 
 ```json
-{"output":2,"metadata":{"run_id":"cf9b84eb-6932-4d47-b3f7-2a5c45519d7d","feedback_tokens":[]}}
+{"output":43,"metadata":{"run_id":"cf9b84eb-6932-4d47-b3f7-2a5c45519d7d","feedback_tokens":[]}}
 ```
 
 ### Resume Key Points Route
