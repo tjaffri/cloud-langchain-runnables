@@ -90,7 +90,6 @@ agent = create_openai_tools_agent(
 agent_executor = AgentExecutor(
     agent=agent, 
     tools=tools,
-    handle_parsing_errors=True,
     max_iterations=5,
 )
 
@@ -111,7 +110,7 @@ def company_research_node(state: SimpleGraphState) -> SimpleGraphState:
             raise ValueError(f"Could not find valid information for company: {company_name}")
 
         return {
-            "output": json.dumps(company_info.model_dump())
+            "output": company_info.model_dump()
         }
     except Exception as e:
         raise Exception(f"Failed to process company {company_name}: {str(e)}")

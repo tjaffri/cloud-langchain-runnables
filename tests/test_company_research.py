@@ -4,9 +4,8 @@ from cloud_langchain_runnables.company_research import company_research_graph
 from langsmith import traceable
 
 @traceable
-def validate_company_info(json_str):
+def validate_company_info(data):
     """Helper function to validate the JSON output matches our expected schema"""
-    data = json.loads(json_str)
     
     # Check required fields
     assert "officers" in data, "Missing officers field"
@@ -38,9 +37,8 @@ def test_public_company_research():
     validate_company_info(output)
     
     # Additional checks specific to Apple
-    data = json.loads(output)
-    assert data["current_stock_price"] is not None, "Apple should have a stock price"
-    assert "Cupertino" in data["headquartered_at"], "HQ should be in Cupertino"
+    assert output["current_stock_price"] is not None, "Apple should have a stock price"
+    assert "Cupertino" in output["headquartered_at"], "HQ should be in Cupertino"
 
 @traceable
 def test_private_company_research():
@@ -53,10 +51,9 @@ def test_private_company_research():
     validate_company_info(output)
     
     # Additional checks specific to SpaceX
-    data = json.loads(output)
-    assert data["current_stock_price"] is None, "Private company should not have stock price"
-    assert any("Elon Musk" in officer["name"] for officer in data["officers"]), "Should find Elon Musk"
-    assert data["year_founded"] == 2002, "SpaceX was founded in 2002"
+    assert output["current_stock_price"] is None, "Private company should not have stock price"
+    assert any("Elon Musk" in officer["name"] for officer in output["officers"]), "Should find Elon Musk"
+    assert output["year_founded"] == 2002, "SpaceX was founded in 2002"
 
 @traceable
 def test_invalid_company():
