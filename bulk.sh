@@ -84,7 +84,7 @@ call_api() {
         --data "{
             \"assistant_id\": \"company_research\",
             \"input\": {
-                \"input\": \"$company\"
+                \"company_name\": \"$company\"
             }
         }"
     echo -e "\n\n----------------------------------------\n"

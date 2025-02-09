@@ -2,3 +2,9 @@
 
 1. [LangGraph](./docs/LangGraph.md)
 2. [Railway.app](./docs/Railway.md)
+
+# Run Tests
+
+```bash
+pytest
+```
