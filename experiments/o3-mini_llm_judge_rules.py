@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 client = Client()
 dataset_name = "Company Research"
 
-LLM = ChatOpenAI(model="o3-mini", reasoning_effort="low", max_completion_tokens=1024, timeout=60 * 2, max_retries=2)
+LLM = ChatOpenAI(model="o3-mini", reasoning_effort="medium", max_completion_tokens=1024*8, timeout=60 * 2, max_retries=2)
 def custom_llm_judge_evaluator(run_example: Example, reference_example: Example) -> dict:
     return llm_judge_evaluator(LLM, run_example, reference_example)
 

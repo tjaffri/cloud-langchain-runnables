@@ -126,3 +126,55 @@ def llm_judge_evaluator(LLM: BaseChatModel, run_example: Example, reference_exam
     # Extract the content from the AIMessage
     result_content = result.content if hasattr(result, 'content') else str(result)
     return output_parser.parse(result_content)
+
+def llm_judge_fuzzy_evaluator(LLM: BaseChatModel, run_example: Example, reference_example: Example) -> dict:
+    """
+    Scores run output vs reference example using an LLM.
+    Scoring algorithm matches static_rules_evaluator (see prompt below).
+    """
+    prompt = f"""You are an evaluator for company research outputs. Compare the run output to the reference output and assign a score based on these criteria:
+
+    Scoring Rules:
+    1. Traverse both outputs recursively, counting all leaf values (strings, numbers, nested objects, etc.)
+    2. For nested objects, make sure you count and compare all keys and values
+    3. Order doesn't matter, just make sure you compare all keys and values regardless of order
+    4. Extra keys in run output are ignored - only score based on reference values
+    5. Fuzzy matching is allowed and works the following way:
+        - For strings, look for semantic equality, e.g. "Apple" and "Apple Inc." should match
+        - For numbers that change often, e.g. prices, look for approximate equality within 10%, e.g. $100 and $101 should match
+    5. Score = (number of matching values) / (total number of values in reference)
+    6. Round the final score to 3 decimal places
+
+    For example:
+    - If reference has 3 values and all match: score = 1.0
+    - If reference has 3 values and 2 match: score = 0.667
+    - If reference has 4 nested values and 2 match: score = 0.5
+
+    Reference Output: {reference_example.outputs}
+    Run Output: {run_example.outputs}
+
+    Provide your response as a JSON dictionary with two keys:
+    - 'score': A float between 0 and 1 representing the score (rounded to 3 decimal places)
+    - 'reasoning': A string explaining how you calculated the score, including:
+        - Total number of values in reference
+        - Number of matching values found
+        - How you arrived at the final score
+
+    Be specific in your reasoning about which values were compared and how you counted them.
+    """
+    
+    from langchain.output_parsers import ResponseSchema, StructuredOutputParser
+
+    response_schemas = [
+        ResponseSchema(name="score", description="A float between 0 and 1 representing the score", type="float"),
+        ResponseSchema(name="reasoning", description="A string explaining how the score was calculated", type="string")
+    ]
+    
+    output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+    prompt += "\n\n" + output_parser.get_format_instructions()
+    
+    result = LLM.invoke(prompt)
+
+    # Extract the content from the AIMessage
+    result_content = result.content if hasattr(result, 'content') else str(result)
+    return output_parser.parse(result_content)
