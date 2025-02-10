@@ -15,8 +15,11 @@ add_one_runnable = RunnableLambda(add_one)
 
 # Create graph
 def add_one_node(state: SimpleGraphState) -> SimpleGraphState:
-    input = int(state.get("input"))
-    return {"output": str(add_one(input))}
+    input_val = state.get("input")
+    if input_val is None:
+        raise ValueError("Input value is required")
+    input_num = int(str(input_val))
+    return SimpleGraphState(input=str(input_num), output=str(add_one(input_num)))
 
 
 workflow = StateGraph(SimpleGraphState)
