@@ -1,15 +1,13 @@
-import json
-from langchain_openai import ChatOpenAI
+from langsmith.schemas import Example
+from langchain_core.language_models.chat_models import BaseChatModel
 
-LLM = ChatOpenAI(model="o3-mini", reasoning_effort="low", max_completion_tokens=1024, timeout=60 * 2, max_retries=2)
-
-def exact_match_evaluator(run_output: dict, reference_example: dict) -> dict:
+def exact_match_evaluator(run_example: Example, reference_example: Example) -> dict:
     return {
-        "score": 1.0 if run_output == reference_example else 0.0,
-        "reasoning": "Exact match" if run_output == reference_example else "Mismatch"
+        "score": 1.0 if run_example.outputs == reference_example.outputs else 0.0,
+        "reasoning": "Exact match" if run_example.outputs == reference_example.outputs else "Mismatch"
     }
 
-def static_rules_evaluator(run_output: dict, reference_example: dict) -> dict:
+def static_rules_evaluator(run_example: Example, reference_example: Example) -> dict:
     """
     Scores run output vs reference example.
     Scoring algorithm:
@@ -20,18 +18,9 @@ def static_rules_evaluator(run_output: dict, reference_example: dict) -> dict:
     - Score = (matching values) / (total values in reference)
     """
     try:
-        # Get reference output from the example
-        reference_output = reference_example.get("output", {})
-        
-        # Handle the case where outputs might be strings
-        if isinstance(run_output, str):
-            run_output = json.loads(run_output)
-        if isinstance(reference_output, str):
-            reference_output = json.loads(reference_output)
-        
-        # Extract the actual output if it's wrapped
-        if isinstance(run_output, dict) and "output" in run_output:
-            run_output = run_output["output"]
+        # Get outputs from the examples
+        reference_output = reference_example.outputs
+        run_output = run_example.outputs
 
         def count_values(obj):
             """Recursively count total number of values in an object"""
@@ -89,7 +78,7 @@ def static_rules_evaluator(run_output: dict, reference_example: dict) -> dict:
             "reasoning": f"Error evaluating output: {str(e)}"
         }
 
-def llm_judge_evaluator(run_output: dict, reference_example: dict) -> dict:
+def llm_judge_evaluator(LLM: BaseChatModel, run_example: Example, reference_example: Example) -> dict:
     """
     Scores run output vs reference example using an LLM.
     Scoring algorithm matches static_rules_evaluator (see prompt below).
@@ -97,19 +86,20 @@ def llm_judge_evaluator(run_output: dict, reference_example: dict) -> dict:
     prompt = f"""You are an evaluator for company research outputs. Compare the run output to the reference output and assign a score based on these criteria:
 
     Scoring Rules:
-    1. Traverse both outputs recursively, counting all leaf values (strings, numbers, etc.)
-    2. For lists containing dictionaries with name/title fields (like company officers), order doesn't matter
-    3. Extra keys in run output are ignored - only score based on reference values
-    4. Score = (number of matching values) / (total number of values in reference)
-    5. Round the final score to 3 decimal places
+    1. Traverse both outputs recursively, counting all leaf values (strings, numbers, nested objects, etc.)
+    2. For nested objects, make sure you count and compare all keys and values
+    3. Order doesn't matter, just make sure you compare all keys and values regardless of order
+    4. Extra keys in run output are ignored - only score based on reference values
+    5. Score = (number of matching values) / (total number of values in reference)
+    6. Round the final score to 3 decimal places
 
     For example:
     - If reference has 3 values and all match: score = 1.0
     - If reference has 3 values and 2 match: score = 0.667
     - If reference has 4 nested values and 2 match: score = 0.5
 
-    Reference Output: {reference_example}
-    Run Output: {run_output}
+    Reference Output: {reference_example.outputs}
+    Run Output: {run_example.outputs}
 
     Provide your response as a JSON dictionary with two keys:
     - 'score': A float between 0 and 1 representing the score (rounded to 3 decimal places)
