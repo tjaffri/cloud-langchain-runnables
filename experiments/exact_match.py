@@ -1,6 +1,6 @@
 from langsmith import evaluate, Client
 from cloud_langchain_runnables.company_research import company_research_graph
-from experiments.evaluators import static_rules_evaluator
+from experiments.evaluators import exact_match_evaluator
 
 # 1. Create and/or select your dataset
 client = Client()
@@ -10,6 +10,6 @@ dataset_name = "Company Research"
 evaluate(
     company_research_graph.invoke,
     data=dataset_name,
-    evaluators=[static_rules_evaluator],
-    experiment_prefix="Company Research - Static Rules"
+    evaluators=[exact_match_evaluator],
+    experiment_prefix="Company Research - Exact Match"
 )

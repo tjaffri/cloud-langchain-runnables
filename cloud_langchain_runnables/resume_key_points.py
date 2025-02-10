@@ -25,9 +25,10 @@ resume_key_points_runnable = prompt | LLM
 # Create graph
 def resume_key_points_node(state: SimpleGraphState) -> SimpleGraphState:
     input = str(state.get("input"))
-    return {
-        "output": resume_key_points_runnable.invoke(input).content,
-    }
+    return SimpleGraphState(
+        input=input,
+        output=resume_key_points_runnable.invoke({"resume_text": input}).content,
+    )
 
 
 workflow = StateGraph(SimpleGraphState)
