@@ -5,7 +5,7 @@ import pytest
 from langchain_openai import ChatOpenAI
 from langsmith.schemas import Example
 
-from experiments.evaluators import llm_judge_evaluator, static_rules_evaluator
+from experiments.evaluators import llm_judge_rules_evaluator, static_rules_evaluator
 
 # Shared test data
 TEST_CASES = [
@@ -119,7 +119,7 @@ def test_static_rules_evaluator(test_case: dict[str, Any]) -> None:
 @pytest.mark.parametrize("test_case", TEST_CASES, ids=lambda x: x["name"])
 def test_o3_mini_llm_judge_evaluator(test_case: dict[str, Any]) -> None:
     """Test LLM judge evaluator with shared test cases"""
-    result = llm_judge_evaluator(
+    result = llm_judge_rules_evaluator(
         ChatOpenAI(
             model="o3-mini",
             reasoning_effort="low",
