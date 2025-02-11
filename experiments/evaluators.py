@@ -106,9 +106,8 @@ def llm_judge_rules_evaluator(LLM: BaseChatModel, run_example: Example, referenc
     - 'reasoning': A string explaining how you calculated the score, including:
         - Total number of values in reference
         - Number of matching values found
+        - A detailed (and easy to read) itemization of each matching and non-matching value
         - How you arrived at the final score
-
-    Be specific in your reasoning about which values were compared and how you counted them.
     """
     
     from langchain.output_parsers import ResponseSchema, StructuredOutputParser
@@ -158,9 +157,8 @@ def llm_judge_fuzzy_evaluator(LLM: BaseChatModel, run_example: Example, referenc
     - 'reasoning': A string explaining how you calculated the score, including:
         - Total number of values in reference
         - Number of matching values found
+        - A detailed (and easy to read) itemization of each matching and non-matching value
         - How you arrived at the final score
-
-    Be specific in your reasoning about which values were compared and how you counted them.
     """
     
     from langchain.output_parsers import ResponseSchema, StructuredOutputParser
