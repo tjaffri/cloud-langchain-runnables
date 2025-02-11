@@ -17,5 +17,5 @@ evaluate(
     company_research_graph.invoke,
     data=dataset_name,
     evaluators=[custom_llm_judge_evaluator],
-    experiment_prefix="Company Research - o3-mini LLM Judge Rules"
+    experiment_prefix="Company Research - GPT-4o LLM Judge Rules"
 )

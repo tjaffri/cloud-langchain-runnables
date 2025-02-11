@@ -17,5 +17,5 @@ evaluate(
     company_research_graph.invoke,
     data=dataset_name,
     evaluators=[custom_llm_judge_evaluator],
-    experiment_prefix="Company Research - o3-mini LLM Judge Fuzzy"
+    experiment_prefix="Company Research - Gemini 2.0 Flash Thinking LLM Judge Fuzzy"
 )
