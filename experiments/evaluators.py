@@ -48,7 +48,7 @@ def static_rules_evaluator(run_example: Example, reference_example: Example) -> 
                 if not isinstance(run, list):
                     return 0
                 # Sort lists if they contain dictionaries with name/title fields
-                # This handles reordering of items like company officers
+                # This handles reordering of items in arrays
                 if ref and isinstance(ref[0], dict) and "name" in ref[0]:
                     ref = sorted(ref, key=lambda x: (x.get("name", ""), x.get("title", "")))
                     run = sorted(run, key=lambda x: (x.get("name", ""), x.get("title", "")))
@@ -78,12 +78,12 @@ def static_rules_evaluator(run_example: Example, reference_example: Example) -> 
             "reasoning": f"Error evaluating output: {str(e)}"
         }
 
-def llm_judge_evaluator(LLM: BaseChatModel, run_example: Example, reference_example: Example) -> dict:
+def llm_judge_rules_evaluator(LLM: BaseChatModel, run_example: Example, reference_example: Example) -> dict:
     """
     Scores run output vs reference example using an LLM.
     Scoring algorithm matches static_rules_evaluator (see prompt below).
     """
-    prompt = f"""You are an evaluator for company research outputs. Compare the run output to the reference output and assign a score based on these criteria:
+    prompt = f"""You are an evaluator for outputs from an agent. Compare the run output to the reference output and assign a score based on these criteria:
 
     Scoring Rules:
     1. Traverse both outputs recursively, counting all leaf values (strings, numbers, nested objects, etc.)
@@ -106,9 +106,8 @@ def llm_judge_evaluator(LLM: BaseChatModel, run_example: Example, reference_exam
     - 'reasoning': A string explaining how you calculated the score, including:
         - Total number of values in reference
         - Number of matching values found
+        - A detailed (and easy to read) itemization of each matching and non-matching value
         - How you arrived at the final score
-
-    Be specific in your reasoning about which values were compared and how you counted them.
     """
     
     from langchain.output_parsers import ResponseSchema, StructuredOutputParser
@@ -132,7 +131,7 @@ def llm_judge_fuzzy_evaluator(LLM: BaseChatModel, run_example: Example, referenc
     Scores run output vs reference example using an LLM.
     Scoring algorithm matches static_rules_evaluator (see prompt below).
     """
-    prompt = f"""You are an evaluator for company research outputs. Compare the run output to the reference output and assign a score based on these criteria:
+    prompt = f"""You are an evaluator for outputs from an agent. Compare the run output to the reference output and assign a score based on these criteria:
 
     Scoring Rules:
     1. Traverse both outputs recursively, counting all leaf values (strings, numbers, nested objects, etc.)
@@ -158,9 +157,8 @@ def llm_judge_fuzzy_evaluator(LLM: BaseChatModel, run_example: Example, referenc
     - 'reasoning': A string explaining how you calculated the score, including:
         - Total number of values in reference
         - Number of matching values found
+        - A detailed (and easy to read) itemization of each matching and non-matching value
         - How you arrived at the final score
-
-    Be specific in your reasoning about which values were compared and how you counted them.
     """
     
     from langchain.output_parsers import ResponseSchema, StructuredOutputParser
